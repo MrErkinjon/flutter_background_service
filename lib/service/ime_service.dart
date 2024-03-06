@@ -21,6 +21,7 @@ class LocationItem {
   final LocationItemType type;
   final String displayValue;
 }
+
 List<LocationItem> _positionItems = [];
 /*TODO Flutter Baackground Location Service*/
 
