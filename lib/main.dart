@@ -22,6 +22,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -35,8 +36,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -59,13 +58,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<LocationItem> positionItems = [];
   StreamSubscription? subscription;
-@override
+
+  @override
   void dispose() {
     subscription?.cancel();
     super.dispose();
   }
+
   @override
   void initState() {
+    initBgService();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       subscription = eventBus.on<EventModel>().listen((event) {
         if (event.event == eventLocationList) {
@@ -89,7 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.builder(
           itemCount: positionItems.length,
           itemBuilder: (_, index) {
-            return ListTile(title: Text(positionItems[index].displayValue),leading: Text(index.toString()),);
+            return ListTile(
+              title: Text(positionItems[index].displayValue),
+              leading: Text(index.toString()),
+            );
           }), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
