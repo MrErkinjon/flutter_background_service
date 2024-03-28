@@ -1,6 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
-
+import 'package:backgroud_location_service/first_screen/first_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -8,13 +7,14 @@ import 'package:flutter/services.dart';
 import 'constants.dart';
 import 'service/event_model.dart';
 import 'service/ime_service.dart';
+import 'service/notification_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Future.wait([
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]),
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
+    checkNotificationPermission(),
+     // initBgService(),
   ]).then((value) {
     runApp(const MyApp());
   });
@@ -40,15 +40,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -62,12 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     subscription?.cancel();
+    // stopLocationService();
     super.dispose();
   }
 
   @override
   void initState() {
-    initBgService();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       subscription = eventBus.on<EventModel>().listen((event) {
         if (event.event == eventLocationList) {
@@ -95,7 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text(positionItems[index].displayValue),
               leading: Text(index.toString()),
             );
-          }), // This trailing comma makes auto-formatting nicer for build methods.
+          }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+         Navigator.push(context, MaterialPageRoute(builder: (_)=>FirstScreen()));
+        },
+        child: Icon(Icons.clear),
+      ), // his trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
