@@ -36,8 +36,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   permission_handler:
-  background_location: ^0.13.0
-  event_bus:
+  location: any
+  url_launcher: any
+  event_bus: any
   #BIOMETRIC
   local_auth: any
 

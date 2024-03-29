@@ -1,38 +1,39 @@
 import 'dart:async';
-import 'package:backgroud_location_service/first_screen/first_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import 'constants.dart';
-import 'service/event_model.dart';
-import 'service/ime_service.dart';
-import 'service/notification_service.dart';
+import 'change_notification.dart';
+import 'change_settings.dart';
+import 'enable_in_background.dart';
+import 'event_model.dart';
+import 'get_location.dart';
+import 'ime_service.dart';
+import 'listen_location.dart';
+import 'permission_status.dart';
+import 'service_enabled.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Future.wait([
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
-    checkNotificationPermission(),
-     // initBgService(),
-  ]).then((value) {
-    runApp(const MyApp());
-  });
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  IMEService();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Location',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.amber,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Location Demo'),
     );
   }
 }
@@ -43,11 +44,11 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<LocationItem> positionItems = [];
+  List<LocationData> positionItems = [];
   StreamSubscription? subscription;
 
   @override
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       subscription = eventBus.on<EventModel>().listen((event) {
         if (event.event == eventLocationList) {
           setState(() {
-            positionItems = event.data as List<LocationItem>;
+            positionItems.add(event.data);
           });
         }
       });
@@ -83,13 +84,16 @@ class _MyHomePageState extends State<MyHomePage> {
           itemCount: positionItems.length,
           itemBuilder: (_, index) {
             return ListTile(
-              title: Text(positionItems[index].displayValue),
+              title: Text("lat:${positionItems[index].latitude} long:${positionItems[index].latitude}"),
               leading: Text(index.toString()),
             );
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-         Navigator.push(context, MaterialPageRoute(builder: (_)=>FirstScreen()));
+          positionItems.clear();
+          setState(() {
+
+          });
         },
         child: Icon(Icons.clear),
       ), // his trailing comma makes auto-formatting nicer for build methods.
